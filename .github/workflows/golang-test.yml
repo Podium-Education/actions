@@ -31,6 +31,7 @@ jobs:
           GOPRIVATE: ${{ inputs.goprivate }}
           TOKEN: ${{ inputs.github-token }}
         run: |
+          echo ${TOKEN}
           git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
           go mod download
 

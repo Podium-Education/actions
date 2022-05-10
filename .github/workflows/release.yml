@@ -1,5 +1,10 @@
 on:
   workflow_call:
+    inputs:
+      sentry-disabled:
+        required: false
+        type: boolean
+        default: true
     secrets:
       sentry-token:
         required: false
@@ -32,7 +37,7 @@ jobs:
           git-tag-format: v<version>
 
       - name: Create Sentry release
-        if: ${{ secrets.sentry-token != '' && secrets.sentry-org != ''}}
+        if: ${{ inputs.sentry-disabled == false }}
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.sentry-token }}

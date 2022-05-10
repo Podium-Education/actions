@@ -2,9 +2,9 @@ on:
   workflow_call:
     secrets:
       sentry-token:
-        required: true
+        required: false
       sentry-org:
-        required: true
+        required: false
       releases-slack-webhook-url:
         required: true
       alerts-slack-webhook-url:
@@ -32,6 +32,7 @@ jobs:
           git-tag-format: v<version>
 
       - name: Create Sentry release
+        if: ${{ secrets.sentry-token != '' && secrets.sentry-org != ''}}
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.sentry-token }}

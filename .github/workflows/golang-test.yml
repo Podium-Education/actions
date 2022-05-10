@@ -31,8 +31,8 @@ jobs:
           GOPRIVATE: ${{ inputs.goprivate }}
           TOKEN: ${{ inputs.github-token }}
         run: |
-          echo ${TOKEN}
-          echo "xx ${{ inputs.github-token }}"
+          git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
+          go mod download
 
       - name: Run coverage
         run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...

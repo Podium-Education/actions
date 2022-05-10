@@ -29,9 +29,8 @@ jobs:
       - name: Setup for private repo Go modules
         env:
           GOPRIVATE: ${{ inputs.goprivate }}
-          TOKEN: ${{ inputs.github-token }}
         run: |
-          git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
+          git config --global url."https://${{ inputs.github-token }}:x-oauth-basic@github.com".insteadOf "https://github.com"
           go mod download
 
       - name: Run coverage

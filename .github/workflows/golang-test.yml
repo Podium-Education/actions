@@ -1,0 +1,48 @@
+name: test
+
+on:
+  workflow_call:
+    inputs:
+      github-repo:
+        required: true
+        type: string
+      goprivate:
+        required: true
+        type: string
+    secrets:
+      github-token:
+        required: true
+jobs:
+  golang:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18.x
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup for private repo Go modules
+        env:
+          GOPRIVATE: ${{ inputs.goprivate }}
+          TOKEN: ${{ inputs.github-token }}
+        run: |
+          git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
+          go mod download
+
+      - name: Run coverage
+        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v3.1.0
+        with:
+          version: latest
+          skip-pkg-cache: true
+          skip-build-cache: true
+
+      - name: Build
+        run: make

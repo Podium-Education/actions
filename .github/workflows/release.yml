@@ -50,7 +50,7 @@ jobs:
               "version": "${{ steps.getversion.outputs.version }}" 
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.release-slack-webhook-url }}
+          SLACK_WEBHOOK_URL: ${{ secrets.releases-slack-webhook-url }}
 
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.19

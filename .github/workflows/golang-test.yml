@@ -46,3 +46,6 @@ jobs:
 
       - name: Build
         run: make
+
+      - name: Alert Slack of failure
+        run: echo "github_repository ${{ github.event.repository.name }} workflow ${{ github.workflow }} action_url ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} status ${{ job.status }}"

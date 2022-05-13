@@ -1,16 +1,6 @@
-# Deprecated - Please use the release-cli.yml instead
 on:
   workflow_call:
-    inputs:
-      sentry-enabled:
-        required: false
-        type: boolean
-        default: true
     secrets:
-      sentry-token:
-        required: false
-      sentry-org:
-        required: false
       releases-slack-webhook-url:
         required: true
       alerts-slack-webhook-url:
@@ -36,16 +26,6 @@ jobs:
           version: ${{ steps.getversion.outputs.version }}
           git-tag-mode: on
           git-tag-format: v<version>
-
-      - name: Create Sentry release
-        if: ${{ inputs.sentry-enabled }}
-        uses: getsentry/action-release@v1
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.sentry-token }}
-          SENTRY_ORG: ${{ secrets.sentry-org }}
-          SENTRY_PROJECT: ${{ github.event.repository.name }}
-        with:
-          version: ${{ github.event.repository.name }}@v${{ steps.getversion.outputs.version }}
 
       - name: Alert Slack of release
         id: slack

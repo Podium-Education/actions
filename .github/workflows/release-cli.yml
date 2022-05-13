@@ -1,4 +1,3 @@
-# Deprecated - Please use the release-cli.yml instead
 on:
   workflow_call:
     inputs:

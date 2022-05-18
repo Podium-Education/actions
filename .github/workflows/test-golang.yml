@@ -16,7 +16,7 @@ on:
       alerts-slack-webhook-url:
         required: true
 env:
-  CODECOV_TOKEN: ${{ inputs.codecov-token }}
+  CODECOV_TOKEN: ${{ secrets.codecov-token }}
 
 jobs:
   golang:

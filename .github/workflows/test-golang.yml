@@ -4,11 +4,19 @@ on:
       goprivate:
         required: true
         type: string
+      codecov-enabled:
+        required: false
+        type: boolean
+        default: true
     secrets:
+      codecov-token:
+        required: false
       github-token:
         required: true
       alerts-slack-webhook-url:
         required: true
+env:
+  CODECOV_TOKEN: ${{ inputs.codecov-token }}
 
 jobs:
   golang:
@@ -34,6 +42,10 @@ jobs:
 
       - name: Run coverage
         run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Upload coverage to Codecov
+        if: ${{ inputs.codecov-enabled }}
+        run: bash <(curl -s https://codecov.io/bash)
 
       - name: Lint
         uses: golangci/golangci-lint-action@v3.2.0

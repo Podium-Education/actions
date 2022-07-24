@@ -24,9 +24,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run coverage
-        run: echo "run tests with coverage!"
-
       - name: Setup for private repo
         env:
           TOKEN: ${{ secrets.github-token }}
@@ -38,7 +35,7 @@ jobs:
           pip install wheel
 
       - name: Run coverage
-        run: "run test with coverage"
+        run: echo "run test with coverage"
 
       - name: Upload coverage to Codecov
         if: ${{ inputs.codecov-enabled }}

@@ -1,0 +1,60 @@
+on:
+  workflow_call:
+    inputs:
+      codecov-enabled:
+        required: false
+        type: boolean
+        default: true
+    secrets:
+      codecov-token:
+        required: false
+      github-token:
+        required: true
+      alerts-slack-webhook-url:
+        required: true
+env:
+  CODECOV_TOKEN: ${{ secrets.codecov-token }}
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Run coverage
+        run: echo "run tests with coverage!"
+
+      - name: Setup for private repo
+        env:
+          TOKEN: ${{ secrets.github-token }}
+        run: |
+          git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
+          pip install wheel
+          pip wheel --wheel-dir=wheels -r requirements.txt
+
+      - name: Run coverage
+        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Upload coverage to Codecov
+        if: ${{ inputs.codecov-enabled }}
+        run: bash <(curl -s https://codecov.io/bash)
+
+      - name: Run coverage
+        run: echo "run tests with coverage!"
+
+      - name: Alert Slack of failure
+        uses: slackapi/slack-github-action@v1.19
+        if: failure()
+        with:
+          payload: |
+            {
+              "github_repository": "${{ github.event.repository.name }}",
+              "workflow": "${{ github.workflow }}",
+              "action_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}", 
+              "status": "${{ job.status }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.alerts-slack-webhook-url }}

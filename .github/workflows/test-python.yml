@@ -38,14 +38,11 @@ jobs:
           pip install wheel
 
       - name: Run coverage
-        run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+        run: "run test with coverage"
 
       - name: Upload coverage to Codecov
         if: ${{ inputs.codecov-enabled }}
         run: bash <(curl -s https://codecov.io/bash)
-
-      - name: Run coverage
-        run: echo "run tests with coverage!"
 
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.19

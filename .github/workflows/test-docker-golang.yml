@@ -1,23 +1,10 @@
-# Deprecated - Please use:
-# - publish-docker-golang.yml for golang projects
-# - publish-docker-python.yml for python projects
 on:
   workflow_call:
     inputs:
       goprivate:
         required: true
         type: string
-      aws-region:
-        required: true
-        type: string
-      docker-image-prefix:
-        required: true
-        type: string
     secrets:
-      aws-access-key-id:
-        required: true
-      aws-secret-access-key:
-        required: true
       github-token:
         required: true
       alerts-slack-webhook-url:
@@ -30,10 +17,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Read .SEMVER file
-        id: getversion
-        run: echo "::set-output name=version::$(cat .SEMVER)"
-
       - name: Setup for private repo Go modules
         env:
           GOPRIVATE: ${{ inputs.goprivate }}
@@ -41,18 +24,7 @@ jobs:
         run: |
           git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
           go mod download
-          go mod vendor
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.aws-access-key-id }}
-          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
-          aws-region: ${{ inputs.aws-region }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+          go mod vendor 
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -61,11 +33,9 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          push: true
+          push: false
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:latest
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ steps.getversion.outputs.version }}
+            local/${{ github.event.repository.name }}:latest
 
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.19

@@ -31,9 +31,11 @@ jobs:
         env:
           TOKEN: ${{ secrets.github-token }}
         run: |
-          git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
           pip install wheel
+          sed "s/git+ssh:\/\/git@github.com/https:\/\/${TOKEN}:x-oauth-basic@github.com/g"  requirements.txt > requirements_updated.txt
+          mv requirements_updated requirements.txt
           pip wheel --wheel-dir=wheels -r requirements.txt
+          pip install wheel
 
       - name: Run coverage
         run: go test -race -coverprofile=coverage.txt -covermode=atomic ./...

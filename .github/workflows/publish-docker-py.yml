@@ -67,7 +67,7 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ github.sha }}
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ steps.getversion.outputs.version }}
           build-args: |
-            aws_account_id=${{ secrets.aws-account-id }}
+            aws_account_id=${{ inputs.aws-account-id }}
 
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.19

@@ -14,8 +14,6 @@ on:
         required: true
         type: string
     secrets:
-      aws-account-id:
-        required: true
       aws-access-key-id:
         required: true
       aws-secret-access-key:

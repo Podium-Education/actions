@@ -1,5 +1,10 @@
 on:
   workflow_call:
+    inputs:
+      codecov-enabled:
+        required: false
+        type: boolean
+        default: true
     secrets:
       github-token:
         required: true
@@ -32,6 +37,8 @@ jobs:
           push: false
           tags: |
             local/${{ github.event.repository.name }}:latest
+          build-args: |
+            aws_account=local
 
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.19

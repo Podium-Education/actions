@@ -1,6 +1,9 @@
 on:
   workflow_call:
     inputs:
+      aws-account-id:
+        required: true
+        type: string
       aws-region:
         required: true
         type: string
@@ -61,6 +64,8 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:latest
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ github.sha }}
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ steps.getversion.outputs.version }}
+          build-args: |
+            aws_account=${{ secrets.aws-account-id }}
 
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.19

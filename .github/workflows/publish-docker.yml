@@ -1,6 +1,6 @@
 # Deprecated - Please use:
-# - publish-docker-go-v*.yml for golang projects
-# - publish-docker-py-v*.yml for python projects
+# - publish-docker-go.yml for golang projects
+# - publish-docker-py.yml for python projects
 on:
   workflow_call:
     inputs:

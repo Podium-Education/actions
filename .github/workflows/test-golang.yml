@@ -1,4 +1,4 @@
-# Deprecated - Please use test-go-v*.yml
+# Deprecated - Please use test-go.yml
 on:
   workflow_call:
     inputs:

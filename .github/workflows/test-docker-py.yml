@@ -7,6 +7,10 @@ on:
     secrets:
       aws-account-id:
         required: true
+      aws-access-key-id:
+        required: true
+      aws-secret-access-key:
+        required: true
       github-token:
         required: true
       alerts-slack-webhook-url:

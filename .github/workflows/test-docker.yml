@@ -1,6 +1,6 @@
 # Deprecated - Please use:
-# - test-docker-go-v*.yml for golang projects
-# - test-docker-py-v*.yml for python projects
+# - test-docker-go.yml for golang projects
+# - test-docker-py.yml for python projects
 on:
   workflow_call:
     inputs:

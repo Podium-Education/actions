@@ -7,9 +7,10 @@ on:
       aws-region:
         required: true
         type: string
-    secrets:
       aws-account-id:
         required: true
+        type: string
+    secrets:
       aws-access-key-id:
         required: true
       aws-secret-access-key:
@@ -45,6 +46,8 @@ jobs:
           push: false
           tags: |
             local/${{ github.event.repository.name }}:latest
+          build-args: |
+            aws_account_id=${{ secrets.aws-account-id }}
 
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.19

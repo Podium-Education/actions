@@ -1,4 +1,3 @@
-# Deprecated - Please use test-go-v*.yml
 on:
   workflow_call:
     inputs:

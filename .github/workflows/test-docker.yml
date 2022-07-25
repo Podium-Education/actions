@@ -1,4 +1,6 @@
-# Deprecated - 2022-07-24, Removing on 2022-08-24
+# Deprecated - Please use:
+# - test-docker-go-v*.yml for golang projects
+# - test-docker-py-v*.yml for python projects
 on:
   workflow_call:
     inputs:

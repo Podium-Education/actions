@@ -7,9 +7,6 @@ on:
       aws-region:
         required: true
         type: string
-      docker-image-prefix:
-        required: true
-        type: string
     secrets:
       github-token:
         required: true

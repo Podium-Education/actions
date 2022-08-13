@@ -50,7 +50,7 @@ jobs:
             aws_account_id=${{ inputs.aws-account-id }}
 
       - name: Alert Slack of failure
-        uses: slackapi/slack-github-action@v1.19
+        uses: slackapi/slack-github-action@v1.21
         if: failure()
         with:
           payload: |

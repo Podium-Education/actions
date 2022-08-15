@@ -18,7 +18,7 @@ jobs:
         run: echo "::set-output name=version::$(cat .SEMVER)"
 
       - name: Release the Kraken
-        uses: podium-education/kraken@v0.4.3
+        uses: podium-education/kraken@v0.4.4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           github-repository: ${{ github.repository }}

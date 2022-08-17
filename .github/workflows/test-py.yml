@@ -8,6 +8,10 @@ on:
     secrets:
       codecov-token:
         required: false
+      lab-aws-access-key-id:
+        required: true
+      lab-aws-secret-access-key:
+        required: true
       github-token:
         required: true
       alerts-slack-webhook-url:
@@ -32,6 +36,17 @@ jobs:
           sed "s/git+ssh:\/\/git@github.com/git+https:\/\/${TOKEN}:x-oauth-basic@github.com/g"  requirements_podium.txt > requirements_podium_updated.txt
           mv requirements_podium_updated.txt requirements_podium.txt
           pip wheel --wheel-dir=wheels -r requirements_podium.txt
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.lab-aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.lab-aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: Copy seagull into /usr/local/lib
+        run: |
+          aws s3 sync s3://podiumeducation-lab-artifacts-20210510/seagull /usr/local/lib
 
       - name: Run coverage
         run: |

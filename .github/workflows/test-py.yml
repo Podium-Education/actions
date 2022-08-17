@@ -35,8 +35,7 @@ jobs:
 
       - name: Run coverage
         run: |
-          pip install pytest
-          pip install pytest-cov
+          pip install -r requirements.txt
           pytest --cov=${{ github.event.repository.name }} .
 
       - name: Upload coverage to Codecov

@@ -35,7 +35,10 @@ jobs:
           pip install wheel
 
       - name: Run coverage
-        run: pytest --cov=${{ github.event.repository.name }} .
+        run: |
+          pip install pytest
+          pip install pytest-cov
+          pytest --cov=${{ github.event.repository.name }} .
 
       - name: Upload coverage to Codecov
         if: ${{ inputs.codecov-enabled }}

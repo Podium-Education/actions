@@ -5,6 +5,9 @@ on:
         required: false
         type: boolean
         default: true
+      lab-aws-region:
+        required: true
+        type: string
     secrets:
       codecov-token:
         required: false

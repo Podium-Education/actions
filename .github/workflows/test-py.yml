@@ -47,9 +47,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.lab-aws-secret-access-key }}
           aws-region: ${{ inputs.lab-aws-region }}
 
-      - name: Copy seagull into /usr/local/lib
+      - name: Copy seagull artifacts out of S3
         run: |
-          aws s3 sync s3://podiumeducation-lab-artifacts-20210510/seagull /usr/local/lib
+          aws s3 sync s3://podiumeducation-lab-artifacts-20210510/seagull seagull
+          sudo mv seagull/* /usr/local/lib
 
       - name: Run coverage
         run: |

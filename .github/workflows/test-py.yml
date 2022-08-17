@@ -36,6 +36,7 @@ jobs:
       - name: Run coverage
         run: |
           pip install -r requirements.txt
+          pip install wheels/*.whl
           pytest --cov=${{ github.event.repository.name }} .
 
       - name: Upload coverage to Codecov

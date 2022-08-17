@@ -36,9 +36,9 @@ jobs:
           TOKEN: ${{ secrets.github-token }}
         run: |
           pip install wheel
-          sed "s/git+ssh:\/\/git@github.com/git+https:\/\/${TOKEN}:x-oauth-basic@github.com/g"  requirements.txt > requirements_updated.txt
-          mv requirements_updated.txt requirements.txt
-          pip wheel --wheel-dir=wheels -r requirements.txt
+          sed "s/git+ssh:\/\/git@github.com/git+https:\/\/${TOKEN}:x-oauth-basic@github.com/g"  requirements_podium.txt > requirements_podium_updated.txt
+          mv requirements_podium_updated.txt requirements_podium.txt
+          pip wheel --wheel-dir=wheels -r requirements_podium.txt
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1

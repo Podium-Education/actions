@@ -15,8 +15,6 @@ on:
         required: true
       alerts-slack-webhook-url:
         required: true
-env:
-  CODECOV_TOKEN: ${{ secrets.codecov-token }}
 
 jobs:
   golang:
@@ -54,11 +52,13 @@ jobs:
       - name: Docker run go test coverage
         run: |
           docker run -v ${{ github.workspace }}/tmp:/src/tmp source:latest go test -race -coverprofile=tmp/coverage.txt -covermode=atomic ./...
-          cat ${{ github.workspace }}/tmp/coverage.txt
 
-      - name: Upload coverage to codecov
+      - name: Upload coverage to Codecov
         if: ${{ inputs.codecov-enabled }}
-        run: bash <(curl -s https://codecov.io/bash)
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.codecov-token }}
+          files: ./tmp/coverage.txt
 
       - name: Docker run make
         run: |

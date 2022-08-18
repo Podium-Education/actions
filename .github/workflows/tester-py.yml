@@ -60,7 +60,7 @@ jobs:
 
       - name: Docker build run pytest coverage
         run: |
-          docker run -v ${{ github.workspace }}/tmp:/src/tmp source:latest pytest --cov=${{ github.event.repository.name }} . && mv .coverage tmp/.coverage
+          docker run -v ${{ github.workspace }}/tmp:/src/tmp source:latest pytest --cov=${{ github.event.repository.name }} .
 
       - name: Upload coverage to Codecov
         if: ${{ inputs.codecov-enabled }}

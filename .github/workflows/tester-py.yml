@@ -1,0 +1,70 @@
+on:
+  workflow_call:
+    inputs:
+      codecov-enabled:
+        required: false
+        type: boolean
+        default: true
+      aws-region:
+        required: true
+        type: string
+      aws-account-id:
+        required: true
+        type: string
+    secrets:
+      codecov-token:
+        required: false
+      aws-access-key-id:
+        required: true
+      aws-secret-access-key:
+        required: true
+      github-token:
+        required: true
+      alerts-slack-webhook-url:
+        required: true
+env:
+  CODECOV_TOKEN: ${{ secrets.codecov-token }}
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup for private repo
+        env:
+          TOKEN: ${{ secrets.github-token }}
+        run: |
+          pip install wheel
+          sed "s/git+ssh:\/\/git@github.com/git+https:\/\/${TOKEN}:x-oauth-basic@github.com/g"  requirements_podium.txt > requirements_podium_updated.txt
+          mv requirements_podium_updated.txt requirements_podium.txt
+          pip wheel --wheel-dir=wheels -r requirements_podium.txt
+
+      - name: Docker build
+        run: |
+          docker build --target source -t source:latest .
+
+      - name: Docker build run pytest coverage
+        run: |
+          docker run -v ${{ github.workspace }}/tmp:/src/tmp source:latest pytest --cov=${{ github.repository }} . && mv .coverage tmp/.coverage
+
+      - name: Upload coverage to Codecov
+        if: ${{ inputs.codecov-enabled }}
+        run: bash <(curl -s https://codecov.io/bash)
+
+      - name: Alert Slack of failure
+        uses: slackapi/slack-github-action@v1.21
+        if: failure()
+        with:
+          payload: |
+            {
+              "github_repository": "${{ github.event.repository.name }}",
+              "workflow": "${{ github.workflow }}",
+              "action_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}", 
+              "status": "${{ job.status }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.alerts-slack-webhook-url }}

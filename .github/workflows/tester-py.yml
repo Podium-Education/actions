@@ -22,8 +22,6 @@ on:
         required: true
       alerts-slack-webhook-url:
         required: true
-env:
-  CODECOV_TOKEN: ${{ secrets.codecov-token }}
 
 jobs:
   python:
@@ -64,7 +62,10 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: ${{ inputs.codecov-enabled }}
-        run: bash <(curl -s https://codecov.io/bash)
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.codecov-token }}
+          files: ./tmp/cov.xml
 
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.21

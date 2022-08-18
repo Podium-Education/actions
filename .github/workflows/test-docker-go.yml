@@ -10,6 +10,10 @@ on:
       aws-account-id:
         required: true
         type: string
+      run-docker-tester:
+        required: false
+        type: boolean
+        default: false
     secrets:
       aws-access-key-id:
         required: true
@@ -39,7 +43,24 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Docker build
+      - name: Docker build source:tester
+        if: ${{ inputs.run-docker-tester }}
+        uses: docker/build-push-action@v3
+        with:
+          target: source
+          context: .
+          push: false
+          tags: |
+            local/source:tester
+          build-args: |
+            aws_account_id=${{ inputs.aws-account-id }}
+
+      - name: Docker run source:tester
+        if: ${{ inputs.run-docker-tester }}
+        run: |
+          docker run local/source:tester
+
+      - name: Docker build latest
         uses: docker/build-push-action@v3
         with:
           context: .

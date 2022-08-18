@@ -1,6 +1,12 @@
 on:
   workflow_call:
     inputs:
+      target:
+        required: true
+        type: string
+      command:
+        required: true
+        type: string
       goprivate:
         required: true
         type: string
@@ -21,7 +27,7 @@ on:
         required: true
 
 jobs:
-  docker:
+  tester:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,26 +45,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Docker build
+      - name: Docker build tester image
         uses: docker/build-push-action@v3
         with:
+          target: ${{ inputs.target }}
           context: .
           push: false
           tags: |
-            local/${{ github.event.repository.name }}:latest
+            local:tester
           build-args: |
             aws_account_id=${{ inputs.aws-account-id }}
 
-      - name: Alert Slack of failure
-        uses: slackapi/slack-github-action@v1.21
-        if: failure()
-        with:
-          payload: |
-            {
-              "github_repository": "${{ github.event.repository.name }}",
-              "workflow": "${{ github.workflow }}",
-              "action_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}", 
-              "status": "${{ job.status }}"
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.alerts-slack-webhook-url }}
+      - name: Docker run tester
+        run: |
+          docker run local:tester ${{ inputs.command }}

@@ -41,25 +41,17 @@ jobs:
           skip-pkg-cache: true
           skip-build-cache: true
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Docker build source target
-        uses: docker/build-push-action@v3
-        with:
-          target: source
-          context: .
-          push: false
-          tags: |
-            local:source
+      - name: Docker build
+        run: |
+          docker build --target source -t source:latest .     
 
       - name: Docker run go vet
         run: |
-          docker run local:source go vet ./...
+          docker run source:latest go vet ./...
 
       - name: Docker run go test coverage
         run: |
-          docker run -v tmp:/src/tmp local:source go test -race -coverprofile=tmp/coverage.txt -covermode=atomic ./...
+          docker run -v tmp:/src/tmp source:latest go test -race -coverprofile=tmp/coverage.txt -covermode=atomic ./...
           mv tmp/coverage.txt .
 
       - name: Upload coverage to codecov
@@ -68,15 +60,16 @@ jobs:
 
       - name: Docker run make
         run: |
-          docker run local:source make
+          docker run source:latest make
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Docker build
         uses: docker/build-push-action@v3
         with:
           context: .
           push: false
-          tags: |
-            local:final
 
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.21

@@ -56,6 +56,10 @@ jobs:
         run: |
           docker build --target source -t source:latest .
 
+      - name: Docker build run pylint
+        run: |
+          docker run source:latest pylint ${{ github.event.repository.name }}
+
       - name: Docker build run pytest coverage
         run: |
           docker run -v ${{ github.workspace }}/tmp:/src/tmp source:latest pytest --cov=${{ github.event.repository.name }} --cov-report=xml:tmp/cov.xml .

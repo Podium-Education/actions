@@ -8,6 +8,10 @@ on:
         required: false
         type: boolean
         default: true
+      golangci-lint-enabled:
+        required: false
+        type: boolean
+        default: true
     secrets:
       codecov-token:
         required: false
@@ -34,9 +38,11 @@ jobs:
           go mod download
           go mod vendor 
 
-      - uses: actions/setup-go@v2
+      - name: Setup Go
+        uses: actions/setup-go@v2
 
       - name: Lint
+        if: ${{ inputs.golangci-lint-enabled }}
         uses: golangci/golangci-lint-action@v3.2.0
         with:
           version: latest

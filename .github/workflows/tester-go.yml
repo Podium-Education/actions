@@ -89,19 +89,6 @@ jobs:
           token: ${{ secrets.codecov-token }}
           files: ./tmp/coverage.txt
 
-      - name: Docker run make
-        run: |
-          docker run source:latest make
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Docker build
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: false
-
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.21
         if: failure()

@@ -1,6 +1,10 @@
 on:
   workflow_call:
     inputs:
+      go-version:
+        required: false
+        type: string
+        default: "1.18.x"
       goprivate:
         required: true
         type: string
@@ -26,6 +30,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ inputs.go-version }}
 
       - name: Setup for private repo Go modules
         env:

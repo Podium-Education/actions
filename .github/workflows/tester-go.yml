@@ -1,14 +1,14 @@
 on:
   workflow_call:
     inputs:
+      go-version:
+        required: false
+        type: string
+        default: "1.18.x"
       goprivate:
         required: true
         type: string
       codecov-enabled:
-        required: false
-        type: boolean
-        default: true
-      golangci-lint-enabled:
         required: false
         type: boolean
         default: true
@@ -43,6 +43,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ inputs.go-version }}
+
       - name: Setup for private repo Go modules
         env:
           GOPRIVATE: ${{ inputs.goprivate }}
@@ -51,17 +56,6 @@ jobs:
           git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
           go mod download
           go mod vendor 
-
-      - name: Setup Go
-        uses: actions/setup-go@v2
-
-      - name: Lint
-        if: ${{ inputs.golangci-lint-enabled }}
-        uses: golangci/golangci-lint-action@v3.2.0
-        with:
-          version: latest
-          skip-pkg-cache: true
-          skip-build-cache: true
 
       - name: Configure AWS credentials
         if: ${{ inputs.poded-ecr-enabled }}

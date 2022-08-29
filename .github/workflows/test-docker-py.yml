@@ -21,56 +21,58 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-    - name: Read .SEMVER file
-      id: getversion
-      run: echo "::set-output name=version::$(cat .SEMVER)"
+      - name: Read .SEMVER file
+        id: getversion
+        run: echo "::set-output name=version::$(cat .SEMVER)"
 
-    - name: Setup for private repo
-      env:
-        TOKEN: ${{ secrets.github-token }}
-      run: |
-        pip install wheel
-        sed "s/git+ssh:\/\/git@github.com/git+https:\/\/${TOKEN}:x-oauth-basic@github.com/g"  requirements_podium.txt > requirements_podium_updated.txt
-        mv requirements_podium_updated.txt requirements_podium.txt
-        pip wheel --wheel-dir=wheels -r requirements_podium.txt
+      - name: Setup for private repo
+        env:
+          TOKEN: ${{ secrets.github-token }}
+        run: |
+          pip install wheel
+          sed "s/git+ssh:\/\/git@github.com/git+https:\/\/${TOKEN}:x-oauth-basic@github.com/g"  requirements_podium.txt > requirements_podium_updated.txt
+          mv requirements_podium_updated.txt requirements_podium.txt
+          pip wheel --wheel-dir=wheels -r requirements_podium.txt
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.aws-access-key-id }}
-        aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
-        aws-region: ${{ inputs.aws-region }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-    - name: Docker build
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        push: false
-        tags: |
-          local/${{ github.event.repository.name }}:latest
-        build-args: |
-          aws_account_id=${{ inputs.aws-account-id }}
+      - name: Docker build
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: false
+          tags: |
+            local/${{ github.event.repository.name }}:latest
+          build-args: |
+            aws_account_id=${{ inputs.aws-account-id }}
 
-    - name: Alert Slack of failure
-      uses: slackapi/slack-github-action@v1.21
-      if: failure()
-      with:
-        payload: |
-          {
-            "github_repository": "${{ github.event.repository.name }}",
-            "workflow": "${{ github.workflow }}",
-            "action_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}", 
-            "status": "${{ job.status }}"
-          }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.alerts-slack-webhook-url }}
+      - name: Alert Slack of failure
+        uses: slackapi/slack-github-action@v1.21
+        if: failure()
+        with:
+          payload: |
+            {
+              "github_repository": "${{ github.event.repository.name }}",
+              "workflow": "${{ github.workflow }}",
+              "action_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}", 
+              "status": "${{ job.status }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.alerts-slack-webhook-url }}

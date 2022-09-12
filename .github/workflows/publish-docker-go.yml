@@ -41,7 +41,10 @@ jobs:
 
       - name: Read .SEMVER file
         id: getversion
-        run: echo "::set-output name=version::$(cat .SEMVER)"
+        run: |
+          echo "::set-output name=patch::$(cat .SEMVER)"
+          echo "::set-output name=minor::$(cat .SEMVER | sed 's/\.[0-9]*$//g')"
+          echo "::set-output name=major::$(cat .SEMVER | sed 's/\.[0-9]*\.[0-9]*$//g')"
 
       - name: Setup for private repo Go modules
         env:
@@ -74,7 +77,9 @@ jobs:
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:latest
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ steps.getversion.outputs.version }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ steps.getversion.outputs.patch }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ steps.getversion.outputs.minor }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ steps.getversion.outputs.major }}
           build-args: |
             aws_account_id=${{ inputs.aws-account-id }}
 

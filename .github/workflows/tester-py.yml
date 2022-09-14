@@ -78,7 +78,7 @@ jobs:
           files: ./tmp/cov.xml
 
       - name: Alert Slack of failure
-        uses: slackapi/slack-github-action@v1.21
+        uses: slackapi/slack-github-action@v1.22
         if: failure()
         with:
           payload: |

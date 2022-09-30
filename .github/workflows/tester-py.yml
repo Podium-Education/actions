@@ -62,9 +62,9 @@ jobs:
         run: |
           docker build --target source -t source:latest .
 
-      - name: Docker build run pylint
-        run: |
-          docker run source:latest pylint ${{ github.event.repository.name }}
+#      - name: Docker build run pylint
+#        run: |
+#          docker run source:latest pylint ${{ github.event.repository.name }}
 
       - name: Docker build run pytest coverage
         run: |

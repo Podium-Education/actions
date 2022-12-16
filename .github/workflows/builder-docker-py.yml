@@ -26,10 +26,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Read .SEMVER file
-        id: getversion
-        run: echo "::set-output name=version::$(cat .SEMVER)"
-
       - name: Setup for private repo
         env:
           TOKEN: ${{ secrets.github-token }}

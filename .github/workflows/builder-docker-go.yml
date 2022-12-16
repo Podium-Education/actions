@@ -53,7 +53,7 @@ jobs:
 
       - name: Configure AWS credentials
         if: ${{ inputs.poded-ecr-enabled }}
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
@@ -74,7 +74,7 @@ jobs:
           push: false
 
       - name: Alert Slack of failure
-        uses: slackapi/slack-github-action@v1.21
+        uses: slackapi/slack-github-action@v1.23
         if: failure()
         with:
           payload: |

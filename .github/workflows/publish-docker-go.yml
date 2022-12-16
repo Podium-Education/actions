@@ -42,9 +42,9 @@ jobs:
       - name: Read .SEMVER file
         id: getversion
         run: |
-          echo "::set-output name=patch::$(cat .SEMVER)"
-          echo "::set-output name=minor::$(cat .SEMVER | sed 's/\.[0-9]*$//g')"
-          echo "::set-output name=major::$(cat .SEMVER | sed 's/\.[0-9]*\.[0-9]*$//g')"
+          echo "patch=$(cat .SEMVER)" >> $GITHUB_OUTPUT
+          echo "minor=$(cat .SEMVER | sed 's/\.[0-9]*$//g')" >> $GITHUB_OUTPUT
+          echo "major=$(cat .SEMVER | sed 's/\.[0-9]*\.[0-9]*$//g')" >> $GITHUB_OUTPUT
 
       - name: Setup for private repo Go modules
         env:

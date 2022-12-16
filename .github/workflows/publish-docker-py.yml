@@ -29,7 +29,7 @@ jobs:
 
       - name: Read .SEMVER file
         id: getversion
-        run: echo "::set-output name=version::$(cat .SEMVER)"
+        run: echo "version=$(cat .SEMVER)" >> $GITHUB_OUTPUT
 
       - name: Setup for private repo
         env:

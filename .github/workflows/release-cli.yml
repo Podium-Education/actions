@@ -24,7 +24,7 @@ jobs:
 
       - name: Read .SEMVER file
         id: getversion
-        run: echo "::set-output name=version::$(cat .SEMVER)"
+        run: echo "version=$(cat .SEMVER)" >> $GITHUB_OUTPUT
 
       - name: Release the Kraken
         uses: podium-education/kraken@v0.4.4

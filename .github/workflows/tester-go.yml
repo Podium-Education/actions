@@ -63,7 +63,7 @@ jobs:
 
       - name: Configure AWS credentials
         if: ${{ inputs.poded-ecr-enabled }}
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v1.7.0
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}

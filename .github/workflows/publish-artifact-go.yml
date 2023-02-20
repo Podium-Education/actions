@@ -65,8 +65,8 @@ jobs:
         run: |
           git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
           GOOS=linux GOARCH=amd64 make
-          aws s3 sync --exact-timestamps --delete build s3://{{ inputs.artifacts-bucket }}/${{ github.event.repository.name }}/latest
-          aws s3 sync --exact-timestamps --delete build s3://{{ inputs.artifacts-bucket }}/${{ github.event.repository.name }}/${{ steps.getversion.outputs.patch }}
+          aws s3 sync --exact-timestamps --delete build s3://${{ inputs.artifacts-bucket }}/${{ github.event.repository.name }}/latest
+          aws s3 sync --exact-timestamps --delete build s3://${{ inputs.artifacts-bucket }}/${{ github.event.repository.name }}/${{ steps.getversion.outputs.patch }}
 
       - name: Alert Slack of failure
         uses: slackapi/slack-github-action@v1.23

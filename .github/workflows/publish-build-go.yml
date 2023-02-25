@@ -1,0 +1,83 @@
+on:
+  workflow_call:
+    inputs:
+      go-version:
+        required: false
+        type: string
+        default: "1.18.x"
+      goprivate:
+        required: true
+        type: string
+      aws-region:
+        required: true
+        type: string
+      halbrain-bucket:
+        required: true
+        type: string
+    secrets:
+      aws-access-key-id:
+        required: true
+      aws-secret-access-key:
+        required: true
+      github-token:
+        required: true
+      alerts-slack-webhook-url:
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ inputs.go-version }}
+
+      - name: Read .SEMVER file
+        id: getversion
+        run: |
+          echo "patch=$(cat .SEMVER)" >> $GITHUB_OUTPUT
+          echo "minor=$(cat .SEMVER | sed 's/\.[0-9]*$//g')" >> $GITHUB_OUTPUT
+          echo "major=$(cat .SEMVER | sed 's/\.[0-9]*\.[0-9]*$//g')" >> $GITHUB_OUTPUT
+
+      - name: Setup for private repo Go modules
+        env:
+          GOPRIVATE: ${{ inputs.goprivate }}
+          TOKEN: ${{ secrets.github-token }}
+        run: |
+          git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
+          go mod download
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.aws-access-key-id }}
+          aws-secret-access-key: ${{ secrets.aws-secret-access-key }}
+          aws-region: ${{ inputs.aws-region }}
+
+      - name: Build and sync to S3
+        env:
+          GOPRIVATE: ${{ inputs.goprivate }}
+          TOKEN: ${{ secrets.github-token }}
+        run: |
+          git config --global url."https://${TOKEN}:x-oauth-basic@github.com".insteadOf "https://github.com"
+          GOOS=linux GOARCH=amd64 make
+          aws s3 sync --exact-timestamps --delete build s3://${{ inputs.halbrain-bucket }}/hal/brain/builds/${{ github.event.repository.name }}/latest
+          aws s3 sync --exact-timestamps --delete build s3://${{ inputs.halbrain-bucket }}/hal/brain/builds/${{ github.event.repository.name }}/${{ steps.getversion.outputs.patch }}
+
+      - name: Alert Slack of failure
+        uses: slackapi/slack-github-action@v1.23
+        if: failure()
+        with:
+          payload: |
+            {
+              "github_repository": "${{ github.event.repository.name }}",
+              "workflow": "${{ github.workflow }}",
+              "action_url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}", 
+              "status": "${{ job.status }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.alerts-slack-webhook-url }}

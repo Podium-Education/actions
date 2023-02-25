@@ -36,7 +36,7 @@ jobs:
           pip wheel --wheel-dir=wheels -r requirements_podium.txt
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@567d4149d67f15f52b09796bea6573fc32952783
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}

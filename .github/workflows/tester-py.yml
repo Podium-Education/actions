@@ -47,7 +47,7 @@ jobs:
 
       - name: Configure AWS credentials
         if: ${{ inputs.poded-ecr-enabled }}
-        uses: aws-actions/configure-aws-credentials@567d4149d67f15f52b09796bea6573fc32952783
+        uses: aws-actions/configure-aws-credentials@bab55d3830fe69833c9fecaa51fe2c829a7508f3
         with:
           aws-access-key-id: ${{ secrets.aws-access-key-id }}
           aws-secret-access-key: ${{ secrets.aws-secret-access-key }}

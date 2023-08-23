@@ -75,11 +75,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:latest
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ github.sha }}
             ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ steps.getversion.outputs.patch }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ steps.getversion.outputs.minor }}
-            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.docker-image-prefix }}${{ github.event.repository.name }}:${{ steps.getversion.outputs.major }}
           build-args: |
             aws_account_id=${{ inputs.aws-account-id }}
 
